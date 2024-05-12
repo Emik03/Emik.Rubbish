@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetType>Exe</TargetType>
+        <TargetFramework>net8.0</TargetFramework>
+        <DisableDefaultDocumentation>true</DisableDefaultDocumentation>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="../Emik.Rubbish.csproj"/>
+    </ItemGroup>
+</Project>
