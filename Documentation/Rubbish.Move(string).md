@@ -28,7 +28,6 @@ The following example moves the file or directory `test.txt`
 using System;  
 using Emik;  
   
-  
 if (Rubbish.Move("test.txt"))  
     Console.WriteLine("Sent text.txt to the recycle bin.");  
 else  

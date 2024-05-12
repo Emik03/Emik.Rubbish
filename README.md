@@ -17,11 +17,8 @@ This project has a dependency to [Emik.Morsels](https://github.com/Emik03/Emik.M
 
 ## API
 
-- [`Emik.Rubbish.Move(string)`](https://github.com/Emik03/Emik.Rubbish/blob/master/Documentation/Rubbish.Move(string).md)
-  - Moves the file or directory to the recycling bin.
-
-- [`Emik.Rubbish.MoveAsync(string, CancellationToken)`](https://github.com/Emik03/Emik.Rubbish/blob/master/Documentation/Rubbish.MoveAsync(string%2CCancellationToken).md)
-  - Moves the file or directory to the recycling bin asynchronously.
+- [`Emik.Rubbish.Move(string)`](https://github.com/Emik03/Emik.Rubbish/blob/master/Documentation/Rubbish.Move(string).md): Moves the file or directory to the recycling bin.
+- [`Emik.Rubbish.MoveAsync(string, CancellationToken)`](https://github.com/Emik03/Emik.Rubbish/blob/master/Documentation/Rubbish.MoveAsync(string%2CCancellationToken).md): Moves the file or directory to the recycling bin asynchronously.
 
 ## Contribute
 

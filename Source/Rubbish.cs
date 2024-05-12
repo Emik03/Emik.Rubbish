@@ -17,8 +17,7 @@ public static class Rubbish
     /// (which is relative to the current working directory) to the recycling bin.
     /// </para><code language="csharp">
     /// using System;
-    /// using Emik;
-    /// &#xa;&#xd;
+    /// using Emik;&#xa;&#xd;
     /// if (Rubbish.Move("test.txt"))
     ///     Console.WriteLine("Sent text.txt to the recycle bin.");
     /// else
@@ -48,8 +47,7 @@ public static class Rubbish
     /// (which is relative to the current working directory) to the recycling bin.
     /// </para><code language="csharp">
     /// using System;
-    /// using Emik;
-    /// &#xa;&#xd;
+    /// using Emik;&#xa;&#xd;
     /// if (await Rubbish.MoveAsync("test.txt"))
     ///     Console.WriteLine("Sent text.txt to the recycle bin.");
     /// else
