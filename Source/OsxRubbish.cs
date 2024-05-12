@@ -8,10 +8,10 @@ static class OsxRubbish
     internal static bool Move(string path)
     {
         using var process = CreateProcess(path);
-#if !NET8_0_OR_GREATER
+
         if (process is null)
             return false;
-#endif
+
         process.WaitForExit();
         return process.ExitCode is 0;
     }
@@ -20,21 +20,15 @@ static class OsxRubbish
     internal static async Task<bool> MoveAsync(string path, CancellationToken token)
     {
         using var process = CreateProcess(path);
-#if !NET8_0_OR_GREATER
+
         if (process is null)
             return false;
-#endif
+
         await process.WaitForExitAsync(token);
         return process.ExitCode is 0;
     }
 #endif
-    static
-#if NET8_0_OR_GREATER
-        Process
-#else
-        Process?
-#endif
-        CreateProcess(string path)
+    static Process? CreateProcess(string path)
     {
         ProcessStartInfo info =
 #if NET8_0_OR_GREATER

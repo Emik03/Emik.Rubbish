@@ -1,7 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <RootNamespace>Emik</RootNamespace>
+        <RepositoryUrl>https://github.com/Emik03/Emik.Rubbish</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/Emik03/Emik.Rubbish</PackageProjectUrl>
         <TargetFrameworks>netstandard2.1;net5.0;net6.0;net7.0;net8.0</TargetFrameworks>
+        <Description>Cross-platform library to send files to the recycle bin.</Description>
+        <PackageTags>IO File Folder Directory Path Delete Move Trash Cross Platform Cross-Platform CrossPlatform Recycle Bin Recycle-Bin RecycleBin</PackageTags>
     </PropertyGroup>
     <ItemGroup>
         <None Remove="Emik.Rubbish.Playground/**"/>
