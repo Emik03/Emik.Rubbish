@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 namespace Emik;
-#pragma warning disable CA2012, CA2101, CS8500, S2178, S5034, SA1121, SA1300, SA1310, SYSLIB1054, RCS1075, RCS1187, VSTHRD002
+#pragma warning disable CA2012, CA2101, CS8500, IDE0004, S2178, S5034, SA1121, SA1300, SA1310, SYSLIB1054, RCS1075, RCS1187, VSTHRD002
 using static SmallList;
 using Slice =
 #if NET6_0_OR_GREATER
@@ -78,6 +78,7 @@ static partial class FreedesktopRubbish
         if (s_trash is null || open(path, O_PATH) is var preexistingHandle && preexistingHandle is -1)
             return false;
 
+        // ReSharper disable once RedundantCast
         using SafeFileHandle handle = new((nint)preexistingHandle, true);
         return s_trash.TrashFileAsync(handle).GetAwaiter().GetResult() is not 0;
     }
@@ -87,6 +88,7 @@ static partial class FreedesktopRubbish
         if (s_trash is null || open(path, O_PATH) is var preexistingHandle && preexistingHandle is -1)
             return false;
 
+        // ReSharper disable once RedundantCast
         using SafeFileHandle handle = new((nint)preexistingHandle, true);
         return await s_trash.TrashFileAsync(handle) is not 0;
     }
@@ -128,19 +130,19 @@ static partial class FreedesktopRubbish
         out string trashInfoFile
     )
     {
+#if NET6_0_OR_GREATER
+        var name = path.UntrimmedFileName().Span;
+#else
         var name = Path.GetFileName(path);
-
+#endif
         if (IsUniqueTrashName(trashInfoDirectory, trashFilesDirectory, name, out trashInfoFile, out var ret))
             return ret;
 
         for (var i = 2; i < int.MaxValue; i++)
         {
             var dot = name.IndexOf('.') is var first and not -1 ? first : name.Length;
-#if NET6_0_OR_GREATER
-            var newName = $"{name.AsSpan()[..dot]}.{i}{name.AsSpan()[dot..]}";
-#else
             var newName = $"{name[..dot]}.{i}{name[dot..]}";
-#endif
+
             if (IsUniqueTrashName(trashInfoDirectory, trashFilesDirectory, newName, out trashInfoFile, out var newRet))
                 return newRet;
         }
@@ -227,7 +229,7 @@ static partial class FreedesktopRubbish
     static bool IsUniqueTrashName(
         string trashInfoDirectory,
         string trashFilesDirectory,
-        string name,
+        Slice name,
         out string trashInfoFile,
         out string trashFilesFile
     ) =>
