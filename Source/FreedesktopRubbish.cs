@@ -22,9 +22,7 @@ using Slice =
 /// </para></remarks>
 static partial class FreedesktopRubbish
 {
-    const int O_PATH = 2097152;
-
-    const string C = "clib";
+    const int O_PATH = 2097152; // ReSharper disable once UseSymbolAlias
 
     // ReSharper disable ConvertToConstant.Local
     // Any sane person would make these constants, however in doing so it causes the compiler to
@@ -388,17 +386,17 @@ static partial class FreedesktopRubbish
     }
 
 #if NET7_0_OR_GREATER
-    [LibraryImport(C, EntryPoint = nameof(geteuid))]
+    [LibraryImport("c", EntryPoint = nameof(geteuid))]
     private static partial uint geteuid();
 
-    [LibraryImport(C, EntryPoint = nameof(open), StringMarshalling = StringMarshalling.Utf8)]
-    private static extern int open(string pathname, int flags);
+    [LibraryImport("c", EntryPoint = nameof(open), StringMarshalling = StringMarshalling.Utf8)]
+    private static partial int open(string pathname, int flags);
 #else
-    [DllImport(C, CallingConvention = CallingConvention.Cdecl, EntryPoint = nameof(geteuid), ExactSpelling = true)]
+    [DllImport("c", CallingConvention = CallingConvention.Cdecl, EntryPoint = nameof(geteuid), ExactSpelling = true)]
     static extern uint geteuid();
 
     [DllImport(
-        C,
+        "c",
         CallingConvention = CallingConvention.Cdecl,
         CharSet = CharSet.Ansi,
         EntryPoint = nameof(open),
