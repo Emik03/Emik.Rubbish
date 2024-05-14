@@ -3,6 +3,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emik.Rubbish", "Emik.Rubbis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emik.Rubbish.Playground", "Emik.Rubbish.Playground\Emik.Rubbish.Playground.csproj", "{80A70D62-A9BF-4A28-919D-7D61CAACB690}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Emik.Rubbish.Tests", "Emik.Rubbish.Tests\Emik.Rubbish.Tests.csproj", "{CA39A5AF-A639-4D38-BDAD-BB1B0D329699}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,10 @@ Global
 		{80A70D62-A9BF-4A28-919D-7D61CAACB690}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{80A70D62-A9BF-4A28-919D-7D61CAACB690}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{80A70D62-A9BF-4A28-919D-7D61CAACB690}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA39A5AF-A639-4D38-BDAD-BB1B0D329699}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA39A5AF-A639-4D38-BDAD-BB1B0D329699}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA39A5AF-A639-4D38-BDAD-BB1B0D329699}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA39A5AF-A639-4D38-BDAD-BB1B0D329699}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
 
