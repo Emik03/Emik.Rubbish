@@ -5,6 +5,7 @@
         <DisableDefaultDocumentation>true</DisableDefaultDocumentation>
     </PropertyGroup>
     <ItemGroup>
+        <Compile Include="../Source/GlobalUsings.g.cs"/>
         <ProjectReference Include="../Emik.Rubbish.csproj"/>
     </ItemGroup>
 </Project>

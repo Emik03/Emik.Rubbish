@@ -167,6 +167,8 @@ global using global::CommunityToolkit.HighPerformance.Memory;
 global using global::CommunityToolkit.HighPerformance.Memory.Internals;
 global using global::CommunityToolkit.HighPerformance.Memory.Views;
 global using global::CommunityToolkit.HighPerformance.Streams;
+global using global::Desktop;
+global using global::Desktop.DBus;
 global using global::DotNetProjectFile;
 global using global::DotNetProjectFile.Analyzers;
 global using global::DotNetProjectFile.Analyzers.Helpers;
@@ -239,6 +241,9 @@ global using global::Serilog.Sinks.SystemConsole.Platform;
 global using global::Serilog.Sinks.SystemConsole.Rendering;
 global using global::Serilog.Sinks.SystemConsole.Themes;
 global using global::Substitute;
+global using global::Tmds;
+global using global::Tmds.DBus;
+global using global::Tmds.DBus.Protocol;
 global using global::UnitGenerator;
 global using global::Virtuosity;
 
@@ -575,6 +580,10 @@ namespace CommunityToolkit.HighPerformance.Memory.Views { }
 
 namespace CommunityToolkit.HighPerformance.Streams { }
 
+namespace Desktop { }
+
+namespace Desktop.DBus { }
+
 namespace DotNetProjectFile { }
 
 namespace DotNetProjectFile.Analyzers { }
@@ -718,6 +727,12 @@ namespace Serilog.Sinks.SystemConsole.Rendering { }
 namespace Serilog.Sinks.SystemConsole.Themes { }
 
 namespace Substitute { }
+
+namespace Tmds { }
+
+namespace Tmds.DBus { }
+
+namespace Tmds.DBus.Protocol { }
 
 namespace UnitGenerator { }
 

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
+
 namespace Emik;
-#pragma warning disable CS8500, SA1121
+#pragma warning disable CA2012, CA2101, CS8500, S2178, S5034, SA1121, SA1300, SA1310, SYSLIB1054, RCS1075, RCS1187, VSTHRD002
 using static SmallList;
 using Slice =
 #if NET6_0_OR_GREATER
@@ -11,45 +12,86 @@ using Slice =
 
 /// <summary>Implementation for trashing files on Linux and BSD.</summary>
 /// <remarks><para>
-/// This implementation follows the specification laid out in
+/// This implementation attempts to use
+/// <a href="https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.Trash.html">
+/// <c>org.freedesktop.portal.Trash.TrashFile</c>
+/// </a>, with a fallback implementation that carefully follows the specification laid out in
 /// <a href="https://specifications.freedesktop.org/trash-spec/trashspec-latest.html">
 /// The FreeDesktop.org Trash specification
 /// </a>, Version 1.0 from January 2, 2014.
 /// </para></remarks>
 static partial class FreedesktopRubbish
 {
+    const int O_PATH = 2097152;
+
+    const string C = "clib";
+
     // ReSharper disable ConvertToConstant.Local
     // Any sane person would make these constants, however in doing so it causes the compiler to
     // generate one reference for both use cases when passed as as 'in'/'ref readonly' parameters.
     // This causes unexpected mutation during the loop, and an 'IndexOutOfRangeException' is thrown.
     // For more details, see: https://github.com/dotnet/roslyn/issues/73438.
-#pragma warning disable RCS1187
     static readonly byte s_escape = (byte)'\\', s_newLine = (byte)'\n';
-#pragma warning restore RCS1187 // ReSharper restore ConvertToConstant.Local
+
+    static readonly Connection? s_connection;
 #if NET8_0_OR_GREATER
     static readonly SearchValues<byte> s_whitespace = SearchValues.Create([(byte)' ', (byte)'\t']);
 #endif
+    static readonly Trash? s_trash;
+
+    static FreedesktopRubbish()
+    {
+        try
+        {
+            Connect(out s_connection, out s_trash);
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+    }
 
     /// <inheritdoc cref="Rubbish.Move"/>
     // ReSharper disable UseSymbolAlias
     internal static bool Move(string path) =>
+        DBusMove(path) ||
         GetTrashDirectory(path) is { } trashDirectory &&
         $"{trashDirectory}/info" is var trashInfoDirectory &&
         $"{trashDirectory}/files" is var trashFilesDirectory &&
         EnsureTrashStructure(trashInfoDirectory, trashFilesDirectory) &&
-        GetUniqueTrashName(trashInfoDirectory, trashFilesDirectory, path, out var trashInfoFile) is { } trashFilesFile &&
+        UniqueTrashName(trashInfoDirectory, trashFilesDirectory, path, out var trashInfoFile) is
+            { } trashFilesFile &&
         CreateTrashInfoFile(path, trashInfoFile) &&
         Move(path, trashInfoFile, trashFilesFile);
 
     /// <inheritdoc cref="Rubbish.MoveAsync"/>
     internal static async Task<bool> MoveAsync(string path, CancellationToken token) =>
+        await DBusMoveAsync(path) ||
         await GetTrashDirectoryAsync(path, token) is { } trashDirectory &&
         $"{trashDirectory}/info" is var trashInfoDirectory &&
         $"{trashDirectory}/files" is var trashFilesDirectory &&
         EnsureTrashStructure(trashInfoDirectory, trashFilesDirectory) &&
-        GetUniqueTrashName(trashInfoDirectory, trashFilesDirectory, path, out var trashInfoFile) is { } trashFilesFile &&
+        UniqueTrashName(trashInfoDirectory, trashFilesDirectory, path, out var trashInfoFile) is { } trashFilesFile &&
         await CreateTrashInfoFileAsync(path, trashInfoFile, token) &&
         Move(path, trashInfoFile, trashFilesFile);
+
+    static bool DBusMove(string path)
+    {
+        if (s_trash is null || open(path, O_PATH) is var preexistingHandle && preexistingHandle is -1)
+            return false;
+
+        using SafeFileHandle handle = new((nint)preexistingHandle, true);
+        return s_trash.TrashFileAsync(handle).GetAwaiter().GetResult() is not 0;
+    }
+
+    static async Task<bool> DBusMoveAsync(string path)
+    {
+        if (s_trash is null || open(path, O_PATH) is var preexistingHandle && preexistingHandle is -1)
+            return false;
+
+        using SafeFileHandle handle = new((nint)preexistingHandle, true);
+        return await s_trash.TrashFileAsync(handle) is not 0;
+    }
 
     static string? GetTrashDirectory(string path) =>
         Environment.GetEnvironmentVariable("HOME") is var home &&
@@ -81,7 +123,7 @@ static partial class FreedesktopRubbish
         }
     }
 
-    static string? GetUniqueTrashName(
+    static string? UniqueTrashName(
         string trashInfoDirectory,
         string trashFilesDirectory,
         string path,
@@ -206,9 +248,7 @@ static partial class FreedesktopRubbish
                 Directory.CreateDirectory(directory);
                 return directory;
             }
-#pragma warning disable RCS1075
             catch (Exception)
-#pragma warning restore RCS1075
             {
                 // ignored
             }
@@ -306,15 +346,64 @@ static partial class FreedesktopRubbish
         return Encoding.UTF8.GetString(longest);
     }
 
+    static void Connect(out Connection? connection, out Trash? trash)
+    {
+        if (Address.Session is not { } session)
+        {
+            connection = null;
+            trash = null;
+            return;
+        }
+
+        connection = new(session);
+        var task = connection.ConnectAsync();
+        task.GetAwaiter().GetResult();
+
+        while (!task.IsCompleted)
+            Thread.Sleep(1);
+
+        if (!task.IsCompletedSuccessfully)
+        {
+            connection = null;
+            trash = null;
+            return;
+        }
+
+        AppDomain.CurrentDomain.ProcessExit += Disconnect;
+
+        trash = new DesktopService(connection, "org.freedesktop.portal.Desktop")
+           .CreateTrash("/org/freedesktop/portal/desktop");
+    }
+
+    static void Disconnect(object? _, EventArgs? __)
+    {
+        try
+        {
+            s_connection?.DisconnectedAsync().GetAwaiter().GetResult();
+        }
+        catch (Exception)
+        {
+            // ignored
+        }
+    }
+
 #if NET7_0_OR_GREATER
-    [LibraryImport("c", EntryPoint = nameof(geteuid))]
-#pragma warning disable SA1300
+    [LibraryImport(C, EntryPoint = nameof(geteuid))]
     private static partial uint geteuid();
-#pragma warning restore SA1300
+
+    [LibraryImport(C, EntryPoint = nameof(open), StringMarshalling = StringMarshalling.Utf8)]
+    private static extern int open(string pathname, int flags);
 #else
-    [DllImport("c", EntryPoint = nameof(geteuid), ExactSpelling = true)]
-#pragma warning disable SA1300, SYSLIB1054
+    [DllImport(C, CallingConvention = CallingConvention.Cdecl, EntryPoint = nameof(geteuid), ExactSpelling = true)]
     static extern uint geteuid();
-#pragma warning restore SA1300, SYSLIB1054
+
+    [DllImport(
+        C,
+        CallingConvention = CallingConvention.Cdecl,
+        CharSet = CharSet.Ansi,
+        EntryPoint = nameof(open),
+        ExactSpelling = true
+    )]
+    static extern int open(string pathname, int flags);
 #endif
 }

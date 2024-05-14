@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
+        <FileVersion>1.1</FileVersion>
         <RootNamespace>Emik</RootNamespace>
         <RepositoryUrl>https://github.com/Emik03/Emik.Rubbish</RepositoryUrl>
         <PackageProjectUrl>https://github.com/Emik03/Emik.Rubbish</PackageProjectUrl>
@@ -11,5 +12,6 @@
         <None Remove="Emik.Rubbish.Playground/**"/>
         <Compile Remove="Emik.Rubbish.Playground/**"/>
         <PackageReference Remove="FastGenericNew.SourceGenerator"/>
+        <PackageReference Include="Tmds.DBus.Protocol" Version="0.18.0"/>
     </ItemGroup>
 </Project>
