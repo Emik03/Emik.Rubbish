@@ -12,6 +12,5 @@
         <None Remove="Emik.Rubbish.Playground/**"/>
         <Compile Remove="Emik.Rubbish.Playground/**"/>
         <PackageReference Remove="FastGenericNew.SourceGenerator"/>
-        <PackageReference Include="Tmds.DBus.Protocol" Version="0.18.0"/>
     </ItemGroup>
 </Project>

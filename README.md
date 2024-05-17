@@ -9,11 +9,16 @@ This project has a dependency to [Emik.Morsels](https://github.com/Emik03/Emik.M
 
 ---
 
+- [`always-return-false`](#always-return-false)
 - [API](#api)
 - [Contribute](#contribute)
 - [License](#license)
 
 ---
+
+## `always-return-false`
+
+This is a branch that purposefully produces a non-functional version of this library. The use case is to test in applications that use this library for edge cases by swapping in the working assembly with the one generated from this branch. While this can be done from the consumer's side, additional Unit Tests would be needed to ensure that the toggle is properly implemented. It has therefore been concluded to be simpler to create an unreliable variant.
 
 ## API
 

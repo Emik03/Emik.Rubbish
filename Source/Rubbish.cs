@@ -6,9 +6,7 @@ namespace Emik;
 /// </summary>
 public static class Rubbish
 {
-#if !NET5_0_OR_GREATER
-    static readonly OSPlatform s_bsd = OSPlatform.Create("FREEBSD");
-#endif
+    static readonly Task<bool> s_false = Task.FromResult(false);
 
     /// <summary>Moves the file or directory to the recycling bin.</summary>
     /// <remarks><para>Unlike other IO operations, this method does not ever throw.</para></remarks>
@@ -27,18 +25,7 @@ public static class Rubbish
     /// <returns>
     /// The value <see langword="true"/> if the operation was successful, otherwise; <see langword="false"/>.
     /// </returns>
-    public static bool Move([NotNullWhen(true)] string? path) =>
-        path is not null &&
-#if NET5_0_OR_GREATER
-        (OperatingSystem.IsWindows() ? WindowsRubbish.Move(path) :
-        OperatingSystem.IsMacOS() ? OsxRubbish.Move(path) :
-        (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD()) && FreedesktopRubbish.Move(path));
-#else
-        (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? WindowsRubbish.Move(path) :
-        RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? OsxRubbish.Move(path) :
-        (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(s_bsd)) &&
-        FreedesktopRubbish.Move(path));
-#endif
+    public static bool Move([NotNullWhen(true)] string? path) => false;
 
     /// <summary>Moves the file or directory to the recycling bin asynchronously.</summary>
     /// <remarks><para>Unlike other IO operations, this method does not ever throw.</para></remarks>
@@ -59,16 +46,5 @@ public static class Rubbish
     /// The <see cref="Task{TResult}"/> responsible for the operation, returning the value <see langword="true"/>
     /// if the operation was successful, otherwise; <see langword="false"/>.
     /// </returns>
-    public static async Task<bool> MoveAsync([NotNullWhen(true)] string? path, CancellationToken token = default) =>
-        path is not null &&
-#if NET5_0_OR_GREATER
-        (OperatingSystem.IsWindows() ? WindowsRubbish.Move(path) :
-        OperatingSystem.IsMacOS() ? await OsxRubbish.MoveAsync(path, token) :
-        (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD()) && await FreedesktopRubbish.MoveAsync(path, token));
-#else
-        (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? WindowsRubbish.Move(path) :
-        RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? OsxRubbish.Move(path) :
-        (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(s_bsd)) &&
-        await FreedesktopRubbish.MoveAsync(path, token));
-#endif
+    public static Task<bool> MoveAsync([NotNullWhen(true)] string? path, CancellationToken token = default) => s_false;
 }

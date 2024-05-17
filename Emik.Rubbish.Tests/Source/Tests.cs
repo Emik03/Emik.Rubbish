@@ -5,20 +5,22 @@ using static Xunit.Assert;
 // ReSharper disable once CheckNamespace
 namespace Emik;
 
-public sealed class Tests
+public sealed class Tests : IDisposable
 {
     const string
-        OperationSucceeded = "Expected Rubbish to return true.",
-        PathDisappeared = "Expected the path to move";
+        OperationSucceeded = "Expected Rubbish to return false.",
+        PathDisappeared = "Expected the path to not move";
 
-    static readonly Random s_random =
-#if NET6_0_OR_GREATER
-        Random.Shared;
-#else
-        new Random();
-#endif
+    public string NewName { get; } = Path.Join(Environment.CurrentDirectory, "0");
 
-    static string NewName => Path.Join(Environment.CurrentDirectory, $"{s_random.Next<ulong>()}");
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        if (File.Exists(NewName))
+            File.Delete(NewName);
+        else
+            Directory.Delete(NewName);
+    }
 
     [Fact]
     public void TrashFullFile()
@@ -27,8 +29,8 @@ public sealed class Tests
 
         var result = Rubbish.Move(temp.Name);
 
-        True(result, OperationSucceeded);
-        False(File.Exists(temp.Name), PathDisappeared);
+        False(result, OperationSucceeded);
+        True(File.Exists(temp.Name), PathDisappeared);
     }
 
     [Fact]
@@ -38,8 +40,8 @@ public sealed class Tests
 
         var result = Rubbish.Move(temp.Name.FileName().ToString());
 
-        True(result, OperationSucceeded);
-        False(File.Exists(temp.Name), PathDisappeared);
+        False(result, OperationSucceeded);
+        True(File.Exists(temp.Name), PathDisappeared);
     }
 
     [Fact]
@@ -49,8 +51,8 @@ public sealed class Tests
 
         var result = Rubbish.Move(temp);
 
-        True(result, OperationSucceeded);
-        False(Directory.Exists(temp), PathDisappeared);
+        False(result, OperationSucceeded);
+        True(Directory.Exists(temp), PathDisappeared);
     }
 
     [Fact]
@@ -60,7 +62,7 @@ public sealed class Tests
 
         var result = Rubbish.Move(temp);
 
-        True(result, OperationSucceeded);
-        False(Directory.Exists(temp), PathDisappeared);
+        False(result, OperationSucceeded);
+        True(Directory.Exists(temp), PathDisappeared);
     }
 }
