@@ -2,6 +2,7 @@
     <PropertyGroup>
         <FileVersion>1.1</FileVersion>
         <RootNamespace>Emik</RootNamespace>
+        <CopyrightSince>2024</CopyrightSince>
         <RepositoryUrl>https://github.com/Emik03/Emik.Rubbish</RepositoryUrl>
         <PackageProjectUrl>https://github.com/Emik03/Emik.Rubbish</PackageProjectUrl>
         <TargetFrameworks>netstandard2.1;net5.0;net6.0;net7.0;net8.0</TargetFrameworks>
